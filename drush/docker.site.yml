@@ -1,0 +1,39 @@
+dev:
+  host: appserver.dev.55cdf161-680f-4aae-b055-32a73b0ddfae.drush.in
+  options:
+    db-allows-remote: true
+    db-url: 'mysql://pantheon:301e3e7c737845f2be141e824355a37a@dbserver.dev.55cdf161-680f-4aae-b055-32a73b0ddfae.drush.in:22531/pantheon'
+  paths:
+    drush-script: drush
+    files: files
+  ssh:
+    options: '-p 2222 -o "AddressFamily inet"'
+  uri: dev-unecomm.pantheonsite.io
+  user: dev.55cdf161-680f-4aae-b055-32a73b0ddfae
+live:
+  host: appserver.live.55cdf161-680f-4aae-b055-32a73b0ddfae.drush.in
+  options:
+    db-allows-remote: true
+    db-url: 'mysql://pantheon:79d3597d35de4751b47a9287278336d4@dbserver.live.55cdf161-680f-4aae-b055-32a73b0ddfae.drush.in:18238/pantheon'
+  paths:
+    drush-script: drush
+    files: files
+  ssh:
+    options: '-p 2222 -o "AddressFamily inet"'
+  uri: live-unecomm.pantheonsite.io
+  user: live.55cdf161-680f-4aae-b055-32a73b0ddfae
+test:
+  host: appserver.test.55cdf161-680f-4aae-b055-32a73b0ddfae.drush.in
+  options:
+    db-allows-remote: true
+    db-url: 'mysql://pantheon:68125e2e151f46c5a029900446877cf7@dbserver.test.55cdf161-680f-4aae-b055-32a73b0ddfae.drush.in:11880/pantheon'
+  paths:
+    drush-script: drush
+    files: files
+  ssh:
+    options: '-p 2222 -o "AddressFamily inet"'
+  uri: test-unecomm.pantheonsite.io
+  user: test.55cdf161-680f-4aae-b055-32a73b0ddfae
+local:
+  options:
+    db-url: 'mysqli://root:une@mysql/une'

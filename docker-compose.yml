@@ -1,0 +1,28 @@
+# UNE Docker Drupal 8
+
+version: '3.1'
+
+services:
+
+  drupal:
+    image: registry.gitlab.com/janpoboril/drupal-composer-docker:7.1-apache
+    ports:
+      - 8000:80 
+    volumes:
+      # codebase
+      - ./code:/var/www/drupal
+      # docker specific config for development
+      - ./sites/default:/var/www/drupal/web/sites/default
+      - ./drush:/var/www/drupal/drush/sites
+    restart: always
+
+  mysql:
+    image: mysql:5.7
+    restart: always
+    hostname: mysql
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: 'une'
+    volumes:
+      - ./db_data:/var/lib/mysql
