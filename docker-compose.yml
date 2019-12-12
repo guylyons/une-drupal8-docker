@@ -5,7 +5,7 @@ version: '3.1'
 services:
 
   drupal:
-    image: registry.gitlab.com/janpoboril/drupal-composer-docker:7.1-apache
+    image: guylyons/drupal8:latest
     ports:
       - 8000:80 
     volumes:
@@ -21,7 +21,7 @@ services:
     restart: always
     hostname: mysql
     ports:
-      - 3306:3306
+      - 3306
     environment:
       MYSQL_ROOT_PASSWORD: 'une'
     volumes:
