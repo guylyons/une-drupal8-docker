@@ -5,6 +5,7 @@ version: '3.1'
 services:
 
   drupal:
+    # https://github.com/guylyons/drupal-dockerfile
     image: guylyons/drupal8:latest
     environment:
       XDEBUG_CONFIG: remote_host=host.docker.internal
@@ -13,9 +14,8 @@ services:
     volumes:
       # codebase
       - ./code:/var/www/drupal
-      # docker specific config for development
-      - ./sites/default:/var/www/drupal/web/sites/default
-      - ./drush:/var/www/drupal/drush/sites
+      - ./sites/default:/var/www/drupal/web/sites/default   # override settings stuff
+      - ./drush:/var/www/drupal/drush/sites                 # drush aliases from Pantheon
     restart: always
 
   mysql:
