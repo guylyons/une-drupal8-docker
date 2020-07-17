@@ -12,7 +12,6 @@ services:
     ports:
       - 8000:80 
     volumes:
-      # codebase
       - ./code:/var/www/drupal
       - ./sites/default:/var/www/drupal/web/sites/default   # override settings stuff
       - ./drush:/var/www/drupal/drush/sites                 # drush aliases from Pantheon
