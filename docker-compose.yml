@@ -18,7 +18,7 @@ services:
     restart: always
 
   mysql:
-    image: mysql:5.7
+    image: mariadb:latest
     restart: always
     hostname: mysql
     ports:
