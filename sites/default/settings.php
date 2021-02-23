@@ -87,7 +87,7 @@
  * );
  * @endcode
  */
-$databases = array();
+$databases = [];
 
 /**
  * Customizing database settings.
@@ -250,7 +250,7 @@ $databases = array();
  *   );
  * @endcode
  */
-$config_directories = array();
+$config_directories = [];
 
 /**
  * Settings:.
@@ -272,7 +272,7 @@ $config_directories = array();
  *
  * @see install_select_profile()
  *
- * @deprecated in Drupal 8.3.0 and will be removed before Drupal 9.0.0. The
+ * @deprecated in drupal:8.3.0 and is removed from drupal:9.0.0. The
  *   install profile is written to the core.extension configuration. If a
  *   service requires the install profile use the 'install_profile' container
  *   parameter. Functional code can use \Drupal::installProfile().
@@ -715,13 +715,13 @@ $settings['container_yamls'][] = $app_root . '/' . $site_path . '/services.yml';
  * will allow the site to run off of all variants of example.com and
  * example.org, with all subdomains included.
  */
-$settings['trusted_host_patterns'] = array(
+$settings['trusted_host_patterns'] = [
   '^unedev',
   'une.edu$',
   '^une.r',
   '^une8.r',
   '^.+unecomm\.pantheonsite\.io$',
-);
+];
 
 /**
  * The default list of directories that will be ignored by Drupal's file API.
@@ -748,7 +748,7 @@ $settings['file_scan_ignore_directories'] = [
  */
 $settings['entity_update_batch_size'] = 50;
 
-$databases['default']['default'] = array(
+$databases['default']['default'] = [
   'database' => 'unedev',
   'username' => 'unedevuser',
   'password' => 'tkaAEZNzO43i',
@@ -757,7 +757,7 @@ $databases['default']['default'] = array(
   'port' => '3306',
   'namespace' => 'Drupal\\Core\\Database\\Driver\\mysql',
   'driver' => 'mysql',
-);
+];
 $settings['install_profile'] = 'standard';
 
 $config['config_split.config_split.development_settings']['status'] = FALSE;
@@ -778,20 +778,71 @@ include __DIR__ . "/settings.pantheon.php";
  *
  * NOTE: this MUST happen AFTER loading settings.pantheon.php.
  */
-$config_directories = array(
+$config_directories = [
   CONFIG_SYNC_DIRECTORY => dirname(DRUPAL_ROOT) . '/config',
-);
+];
 
-$databases['migrate']['default'] = array(
-  'database' => 'pantheon',
-  'username' => 'pantheon',
-  'password' => '18c5da9e1a824a7c9c04e6d5b10bb36b',
-  'prefix' => '',
-  'host' => 'dbserver.live.352d4450-e9ab-4360-9478-e4fde57a1ca9.drush.in',
-  'port' => '18179',
-  'namespace' => 'Drupal\\Core\\Database\\Driver\\mysql',
-  'driver' => 'mysql',
-);
+$config['config_split.config_split.pantheon']['status'] = FALSE;
+
+/**
+  * Evnironment Indicator logic
+  * https://www.drupal.org/project/environment_indicator
+  * https://pantheon.io/docs/environment-indicator.
+  */
+if (!defined('PANTHEON_ENVIRONMENT')) {
+  $config['environment_indicator.indicator']['name'] = 'Local';
+  $config['environment_indicator.indicator']['bg_color'] = '#808080';
+  $config['environment_indicator.indicator']['fg_color'] = '#ffffff';
+}
+// Pantheon Env Specific Config.
+if (isset($_ENV['PANTHEON_ENVIRONMENT'])) {
+  // Turn on pantheon config split.
+  $config['config_split.config_split.pantheon']['status'] = TRUE;
+
+
+  /**
+   * LDAP Configuration.
+   */
+
+  // Pantheon Secure Integration overrides.
+  $config['ldap_servers.server.une_ldapserver']['address'] = 'ldaps://127.0.0.1:' . PANTHEON_SOIP_LDAP_NEW;
+  $config['ldap_servers.server.une_ldapserver']['port'] = PANTHEON_SOIP_LDAP_NEW;
+
+  ldap_set_option(NULL, LDAP_OPT_PROTOCOL_VERSION, 3);
+  ldap_set_option(NULL, LDAP_OPT_REFERRALS, 0);
+  ldap_set_option(NULL, LDAP_OPT_X_TLS_REQUIRE_CERT, LDAP_OPT_X_TLS_ALLOW);
+
+  $ldap_cacert = getcwd() . "/../../../all.pem";
+  putenv("LDAPTLS_CACERT=$ldap_cacert");
+  putenv('LDAPTLS_REQCERT=never');
+
+  switch ($_ENV['PANTHEON_ENVIRONMENT']) {
+    case 'dev':
+      $config['environment_indicator.indicator']['name'] = 'Dev';
+      $config['environment_indicator.indicator']['bg_color'] = '#d25e0f';
+      $config['environment_indicator.indicator']['fg_color'] = '#ffffff';
+      break;
+
+    case 'test':
+      $config['environment_indicator.indicator']['name'] = 'Test';
+      $config['environment_indicator.indicator']['bg_color'] = '#c50707';
+      $config['environment_indicator.indicator']['fg_color'] = '#ffffff';
+      break;
+
+    case 'live':
+      $config['environment_indicator.indicator']['name'] = 'Live!';
+      $config['environment_indicator.indicator']['bg_color'] = '#4C742C';
+      $config['environment_indicator.indicator']['fg_color'] = '#ffffff';
+      break;
+
+    default:
+      // Multidev catchall.
+      $config['environment_indicator.indicator']['name'] = 'Multidev';
+      $config['environment_indicator.indicator']['bg_color'] = '#efd01b';
+      $config['environment_indicator.indicator']['fg_color'] = '#000000';
+      break;
+  }
+}
 
 /**
  * If there is a local settings file, then include it.
@@ -801,39 +852,48 @@ if (file_exists($local_settings)) {
   include $local_settings;
 }
 
-/**
-  * Evnironment Indicator logic
-  * https://www.drupal.org/project/environment_indicator
-  * https://pantheon.io/docs/environment-indicator
-  */
-if (!defined('PANTHEON_ENVIRONMENT')) {
-  $config['environment_indicator.indicator']['name'] = 'Local';
-  $config['environment_indicator.indicator']['bg_color'] = '#808080';
-  $config['environment_indicator.indicator']['fg_color'] = '#ffffff';
-}
-// Pantheon Env Specific Config
-if (isset($_ENV['PANTHEON_ENVIRONMENT'])) {
-  switch ($_ENV['PANTHEON_ENVIRONMENT']) {
-    case 'dev':
-      $config['environment_indicator.indicator']['name'] = 'Dev';
-      $config['environment_indicator.indicator']['bg_color'] = '#d25e0f';
-      $config['environment_indicator.indicator']['fg_color'] = '#ffffff';
-      break;
-    case 'test':
-      $config['environment_indicator.indicator']['name'] = 'Test';
-      $config['environment_indicator.indicator']['bg_color'] = '#c50707';
-      $config['environment_indicator.indicator']['fg_color'] = '#ffffff';
-      break;
-    case 'live':
-      $config['environment_indicator.indicator']['name'] = 'Live!';
-      $config['environment_indicator.indicator']['bg_color'] = '#4C742C';
-      $config['environment_indicator.indicator']['fg_color'] = '#ffffff';
-      break;
-    default:
-      // Multidev catchall
-      $config['environment_indicator.indicator']['name'] = 'Multidev';
-      $config['environment_indicator.indicator']['bg_color'] = '#efd01b';
-      $config['environment_indicator.indicator']['fg_color'] = '#000000';
-      break;
+if (isset($_ENV['PANTHEON_ENVIRONMENT']) && php_sapi_name() != 'cli') {
+  // Redirect to https://$primary_domain in the Live environment.
+  if ($_ENV['PANTHEON_ENVIRONMENT'] === 'live') {
+    // Replace www.example.com with your registered domain name.
+    $primary_domain = 'www.une.edu';
+  }
+  else {
+    // Redirect to HTTPS on every Pantheon environment.
+    $primary_domain = $_SERVER['HTTP_HOST'];
+  }
+
+  $requires_redirect = FALSE;
+
+  // Ensure the site is being served from the primary domain.
+  if ($_SERVER['HTTP_HOST'] != $primary_domain) {
+    $requires_redirect = TRUE;
+  }
+
+  // If you're not using HSTS in the pantheon.yml file, uncomment this next block.
+  // if (!isset($_SERVER['HTTP_USER_AGENT_HTTPS'])
+  //     || $_SERVER['HTTP_USER_AGENT_HTTPS'] != 'ON') {
+  //   $requires_redirect = TRUE;
+  // }.
+  if ($requires_redirect === TRUE) {
+
+    // Name transaction "redirect" in New Relic for improved reporting (optional).
+    if (extension_loaded('newrelic')) {
+      newrelic_name_transaction("redirect");
+    }
+
+    header('HTTP/1.0 301 Moved Permanently');
+    header('Location: https://' . $primary_domain . $_SERVER['REQUEST_URI']);
+    exit();
+  }
+  // Drupal 8 Trusted Host Settings.
+  if (is_array($settings)) {
+    $settings['trusted_host_patterns'] = ['^' . preg_quote($primary_domain) . '$'];
   }
 }
+
+// Legacy redirects.
+include_once 'redirects.php';
+
+// For catalog cloner.
+$databases['self']['default'] = $databases['default']['default'];
