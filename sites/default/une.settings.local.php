@@ -75,6 +75,21 @@ $databases['migrate']['default'] = [
   'driver' => 'mysql',
 ];
 
+$databases['default']['default'] = [
+  'database' => 'une',
+  'username' => 'root',
+  'password' => 'une',
+  'prefix' => '',
+  'host' => 'mysql',
+  'port' => '3306',
+  'namespace' => 'Drupal\\Core\\Database\\Driver\\mysql',
+  'driver' => 'mysql',
+];
+
 $settings['update_free_access'] = TRUE;
 
-$settings['trusted_host_patterns'][] = 'pagekite.me$';
+$settings['trusted_host_patterns'] = [
+'^localhost$',                              
+'^192\.168\.00\.52$',
+'^127\.0\.0\.1$',
+];
