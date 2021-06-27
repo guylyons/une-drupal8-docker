@@ -9,6 +9,8 @@ services:
     image: guylyons/drupal8:latest
     environment:
       XDEBUG_CONFIG: remote_host=host.docker.internal
+      COMPOSER_MEMORY_LIMIT: -1
+      COMPOSER_PROCESS_TIMEOUT: 2000 #seconds
     ports:
       - 8000:80 
     volumes:
