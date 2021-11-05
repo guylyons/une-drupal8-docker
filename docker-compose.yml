@@ -6,7 +6,7 @@ services:
 
   drupal:
     # https://github.com/guylyons/drupal-dockerfile
-    image: guylyons/drupal8:latest
+    image: guylyons/drupal:latest
     environment:
       XDEBUG_CONFIG: remote_host=host.docker.internal
       COMPOSER_MEMORY_LIMIT: -1
